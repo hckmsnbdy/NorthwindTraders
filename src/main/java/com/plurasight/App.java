@@ -10,19 +10,30 @@ public class App {
                 "root",
                 "yearup");
 
-        Statement statement = connection.createStatement();
+        String query = "SELECT ProductID, ProductName, UnitPrice, UnitsInStock FROM products";
 
-        String query = "SELECT*FROM products WHERE UnitsOnOrder > '0' ";
+        try {
+            PreparedStatement statement = connection.prepareStatement(query);
 
-        ResultSet results = statement.executeQuery(query);
+            ResultSet results = statement.executeQuery();
 
-        while (results.next()) {
-            String name = results.getString("ProductName");
-            System.out.println(name);
+            while (results.next()) {
+                System.out.print("ProductID:     ");
+                System.out.println(results.getString( "ProductID"));
+                System.out.print("ProductName:   ");
+                System.out.println(results.getString( "ProductName"));
+                System.out.print("UnitPrice:     ");
+                System.out.println(results.getString( "UnitPrice"));
+                System.out.print("UnitsInStock:  ");
+                System.out.println(results.getString( "UnitsInStock"));
+                System.out.println("-----------------------------");
+            }
+
+            results.close();
+            statement.close();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-        connection.close();
-
-
     }
 }
