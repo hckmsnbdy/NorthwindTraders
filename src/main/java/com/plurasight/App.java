@@ -5,6 +5,9 @@ import java.sql.*;
 public class App {
     public static void main(String[] args) throws SQLException {
 
+        PreparedStatement preparedStatement = null;
+        ResultSet resultSet = null;
+
         Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/northwind",
                 "root",
@@ -26,7 +29,7 @@ public class App {
                 System.out.println(results.getString( "UnitPrice"));
                 System.out.print("UnitsInStock:  ");
                 System.out.println(results.getString( "UnitsInStock"));
-                System.out.println("-----------------------------");
+                System.out.println("_______________________________________________");
             }
 
             results.close();
@@ -35,5 +38,11 @@ public class App {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        finally {
+            if (resultSet != null) resultSet.close();
+            if (preparedStatement != null) preparedStatement.close();
+            if (connection != null) connection.close();
+        }
+
     }
 }
