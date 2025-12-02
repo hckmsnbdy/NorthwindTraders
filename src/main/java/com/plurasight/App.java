@@ -1,5 +1,7 @@
 package com.plurasight;
 
+import com.sun.jdi.connect.Connector;
+
 import java.sql.*;
 import java.util.Scanner;
 
@@ -11,21 +13,21 @@ public class App {
         boolean run = true;
 
         while (run) {
+            System.out.println();
             System.out.print("What do you want to do?\n" +
                     "1) Display all products\n" +
                     "2) Display all customers\n" +
                     "0) Exit\n" +
                     "Select an option:");
-            scanner.nextLine();
 
             String input = scanner.nextLine();
 
             switch (input) {
                 case "1":
-                    displayAllProducts();
+                    displayAllProducts(args);
                     break;
                 case "2":
-                    displayAllCustomers();
+                    displayAllCustomers(args);
                     break;
                 case "0":
                     System.out.println("Goodbye");
@@ -36,14 +38,14 @@ public class App {
             }
         }
     }
-    private static void displayAllProducts() throws SQLException {
+    private static void displayAllProducts(String[] args) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/northwind",
-                "root",
-                "yearup");
+                args[0],
+                args[1]);
 
         String query = "SELECT ProductID, ProductName, UnitPrice, UnitsInStock FROM products";
         try {
@@ -73,14 +75,14 @@ public class App {
         }
     }
 
-    private static void displayAllCustomers() throws SQLException {
+    private static void displayAllCustomers(String[] args) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         Connection connection = DriverManager.getConnection(
                 "jdbc:mysql://localhost:3306/northwind",
-                "root",
-                "yearup");
+                args[0],
+                args[1]);
 
         String query = "SELECT ContactName, CompanyName, City, Country, Phone FROM customers";
         try {
@@ -88,15 +90,15 @@ public class App {
             ResultSet results = statement.executeQuery();
 
             while (results.next()) {
-                System.out.print("ContactName:     ");
+                System.out.print("ContactName: ");
                 System.out.println(results.getString("ContactName"));
-                System.out.print("CompanyName:   ");
+                System.out.print("CompanyName: ");
                 System.out.println(results.getString("CompanyName"));
-                System.out.print("City:     ");
+                System.out.print("City:        ");
                 System.out.println(results.getString("City"));
-                System.out.print("Country:  ");
+                System.out.print("Country:     ");
                 System.out.println(results.getString("Country"));
-                System.out.print("Phone:  ");
+                System.out.print("Phone:       ");
                 System.out.println(results.getString("Phone"));
                 System.out.println("_______________________________________________");
             }
