@@ -1,19 +1,17 @@
 package com.plurasight;
 
-import com.sun.jdi.connect.Connector;
-
+import org.apache.commons.dbcp2.BasicDataSource;
+import javax.sql.DataSource;
 import java.sql.*;
 import java.util.Scanner;
 
 public class App {
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args){
+
+        DataSource dataSource = getDataSource(args[0], args[1]);
 
         try (Scanner scanner = new Scanner(System.in);
-
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind",
-                args[0],
-                args[1])) {
+        Connection connection = dataSource.getConnection()) {
 
             boolean run = true;
 
@@ -41,7 +39,6 @@ public class App {
                     case "0":
                         System.out.println("Goodbye");
                         run = false;
-                        connection.close();
                         break;
                     default:
                         System.out.println("Please Enter 0, 1, 2 or 3, Thank You!");
@@ -51,9 +48,7 @@ public class App {
             e.printStackTrace();
         }
     }
-    private static void displayAllProducts( Connection connection) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+    private static void displayAllProducts( Connection connection){
 
         String query = "SELECT ProductID, ProductName, UnitPrice, UnitsInStock FROM products";
 
@@ -71,17 +66,12 @@ public class App {
                 System.out.println(results.getString("UnitsInStock"));
                 System.out.println("_______________________________________________");
             }
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (resultSet != null) resultSet.close();
-            if (preparedStatement != null) preparedStatement.close();
         }
     }
 
-    private static void displayAllCustomers( Connection connection ) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+    private static void displayAllCustomers( Connection connection ){
 
         String query = "SELECT ContactName, CompanyName, City, Country, Phone FROM customers";
 
@@ -101,16 +91,11 @@ public class App {
                 System.out.println(results.getString("Phone"));
                 System.out.println("_______________________________________________");
             }
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (resultSet != null) resultSet.close();
-            if (preparedStatement != null) preparedStatement.close();
         }
     }
-    private static void displayAllCategories( Connection connection,Scanner scanner) throws SQLException {
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+    private static void displayAllCategories( Connection connection,Scanner scanner){
 
         String query = "SELECT CategoryID, CategoryName FROM categories ORDER BY CategoryID";
 
@@ -135,10 +120,6 @@ public class App {
             displayProductsByCategory(connection, categoryId);
         }catch (NumberFormatException e){
             System.out.println("Please enter a valid number");
-        }
-        finally {
-            if (resultSet != null) resultSet.close();
-            if (preparedStatement != null) preparedStatement.close();
         }
     }
     private static void displayProductsByCategory(Connection connection, int categoryId) {
@@ -169,9 +150,17 @@ public class App {
                 }
             }
 
-        } catch (SQLException e) {
+        }catch (SQLException e) {
             e.printStackTrace();
         }
     }
+    private static DataSource getDataSource(String user, String password) {
+        BasicDataSource dataSource = new BasicDataSource();
+        dataSource.setUrl("jdbc:mysql://localhost:3306/northwind");
+        dataSource.setUsername(user);
+        dataSource.setPassword(password);
+        return dataSource;
+    }
+
 
 }
