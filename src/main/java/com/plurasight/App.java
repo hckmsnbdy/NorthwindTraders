@@ -10,6 +10,11 @@ public class App {
 
         Scanner scanner = new Scanner(System.in);
 
+        Connection connection = DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/northwind",
+                args[0],
+                args[1]);
+
         boolean run = true;
 
         while (run) {
@@ -24,30 +29,27 @@ public class App {
 
             switch (input) {
                 case "1":
-                    displayAllProducts(args);
+                    displayAllProducts(connection);
                     break;
                 case "2":
-                    displayAllCustomers(args);
+                    displayAllCustomers(connection);
                     break;
                 case "0":
                     System.out.println("Goodbye");
                     run = false;
+                    connection.close();
                     break;
                 default:
                     System.out.println("Please Enter 0, 1 or 2, Thank You!");
             }
         }
     }
-    private static void displayAllProducts(String[] args) throws SQLException {
+    private static void displayAllProducts( Connection connection) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind",
-                args[0],
-                args[1]);
-
         String query = "SELECT ProductID, ProductName, UnitPrice, UnitsInStock FROM products";
+
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet results = statement.executeQuery();
@@ -65,26 +67,20 @@ public class App {
             }
             results.close();
             statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             if (resultSet != null) resultSet.close();
             if (preparedStatement != null) preparedStatement.close();
-            if (connection != null) connection.close();
         }
     }
 
-    private static void displayAllCustomers(String[] args) throws SQLException {
+    private static void displayAllCustomers( Connection connection ) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost:3306/northwind",
-                args[0],
-                args[1]);
-
         String query = "SELECT ContactName, CompanyName, City, Country, Phone FROM customers";
+
         try {
             PreparedStatement statement = connection.prepareStatement(query);
             ResultSet results = statement.executeQuery();
@@ -105,13 +101,11 @@ public class App {
 
             results.close();
             statement.close();
-            connection.close();
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
             if (resultSet != null) resultSet.close();
             if (preparedStatement != null) preparedStatement.close();
-            if (connection != null) connection.close();
         }
     }
 }
